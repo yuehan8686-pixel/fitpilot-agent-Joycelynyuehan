@@ -999,6 +999,25 @@ button:disabled {
   color: var(--warning);
 }
 
+.coach-network-note {
+  align-items: center;
+  border: 1px solid var(--warning);
+  color: var(--warning);
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+}
+
+.coach-network-note button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
 .coach-input {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -1012,6 +1031,11 @@ button:disabled {
   color: var(--carbon);
   font-weight: 800;
   padding: 0 26px;
+}
+
+.coach-input :disabled {
+  cursor: wait;
+  opacity: .62;
 }
 
 .empty-state,
