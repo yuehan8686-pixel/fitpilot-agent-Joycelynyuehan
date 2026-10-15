@@ -1,0 +1,20 @@
+{
+  "name": "FitPilot 电子健身私教",
+  "short_name": "FitPilot",
+  "description": "本地优先的训练计划、动作记录与智能健身建议。",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0d0c",
+  "theme_color": "#0b0d0c",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export function Dashboard() {
   const plan = useFitnessStore((state) => state.activePlan);
   const history = useFitnessStore((state) => state.workoutHistory);
   const createPlan = useFitnessStore((state) => state.createPlan);
+  const resetAll = useFitnessStore((state) => state.resetAll);
   const setView = useFitnessStore((state) => state.setView);
 
   if (!profile) return null;
@@ -30,6 +31,7 @@ export function Dashboard() {
         </article>
         <button className="coach-entry" type="button" onClick={() => setView("coach")}><span>问问训练 Agent</span><b>打开对话</b></button>
       </section>
+      <footer className="data-controls"><span>档案和训练记录仅保存在当前浏览器。</span><button type="button" onClick={() => { if (window.confirm("确定清除本机档案、计划和训练记录吗？")) resetAll(); }}>重置本机数据</button></footer>
     </main>
   );
 }
