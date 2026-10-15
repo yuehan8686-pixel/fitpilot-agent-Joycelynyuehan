@@ -5,6 +5,16 @@ import { describe, expect, it, vi } from "vitest";
 import { OnboardingFlow } from "../../src/components/onboarding-flow";
 
 describe("OnboardingFlow", () => {
+  it("renders the welcome message as the two requested lines", () => {
+    render(<OnboardingFlow onComplete={vi.fn()} />);
+
+    const heading = screen.getByRole("heading", { level: 1 });
+    const lines = heading.querySelectorAll("[data-heading-line]");
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toHaveTextContent("先认识一下你，");
+    expect(lines[1]).toHaveTextContent("再为你安排专属训练计划");
+  });
+
   it("requires a name before creating a profile", async () => {
     const onComplete = vi.fn();
     render(<OnboardingFlow onComplete={onComplete} />);

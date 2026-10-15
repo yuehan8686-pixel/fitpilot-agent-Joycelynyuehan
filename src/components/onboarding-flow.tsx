@@ -78,7 +78,10 @@ export function OnboardingFlow({ onComplete }: Props) {
       <header className="onboarding-intro">
         <div className="brand-lockup"><span className="brand-mark">FP</span><span>FITPILOT</span></div>
         <p className="system-line">私人训练终端 / 档案校准</p>
-        <h1>先认识一下你，<br />再安排每一组。</h1>
+        <h1>
+          <span data-heading-line>先认识一下你，</span>
+          <span data-heading-line>再为你安排专属训练计划</span>
+        </h1>
         <p className="intro-copy">两分钟建立训练档案。所有数据默认只保存在这台设备。</p>
         <div className="calibration-track" aria-hidden="true"><span /><span /><span /><span /></div>
       </header>

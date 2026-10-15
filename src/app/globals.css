@@ -161,7 +161,7 @@ button:disabled {
   color: var(--carbon);
   min-height: 430px;
   overflow: hidden;
-  padding: 28px clamp(24px, 7vw, 90px) 48px;
+  padding: 28px clamp(24px, 4vw, 64px) 48px;
   position: relative;
 }
 
@@ -197,6 +197,21 @@ button:disabled {
   letter-spacing: -.045em;
   line-height: .92;
   margin: 16px 0 24px;
+}
+
+.onboarding-intro h1 {
+  font-family: var(--sans-zh);
+  font-size: clamp(27px, 2.8vw, 44px);
+  font-stretch: normal;
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.18;
+  max-width: 100%;
+}
+
+.onboarding-intro h1 [data-heading-line] {
+  display: block;
+  white-space: nowrap;
 }
 
 .intro-copy {
@@ -1133,7 +1148,7 @@ button:disabled {
 
 @media (min-width: 900px) {
   .onboarding-shell {
-    grid-template-columns: minmax(380px, .82fr) 1.18fr;
+    grid-template-columns: minmax(460px, .92fr) 1.08fr;
   }
 
   .onboarding-intro {
