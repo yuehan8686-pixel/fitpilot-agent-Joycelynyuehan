@@ -45,6 +45,7 @@ export interface Exercise {
   category: ExerciseCategory;
   movementPattern: string;
   equipment: Equipment[];
+  requiredEquipment?: Equipment[];
   difficulty: ExperienceLevel;
   primaryMuscles: string[];
   secondaryMuscles: string[];

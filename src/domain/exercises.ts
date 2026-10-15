@@ -7,6 +7,7 @@ type Seed = {
   category: ExerciseCategory;
   pattern: string;
   equipment: Equipment[];
+  requiredEquipment?: Equipment[];
   muscles: string[];
   secondary?: string[];
   difficulty?: ExperienceLevel;
@@ -25,6 +26,7 @@ function defineExercise(seed: Seed): Exercise {
     category: seed.category,
     movementPattern: seed.pattern,
     equipment: seed.equipment,
+    requiredEquipment: seed.requiredEquipment,
     difficulty: seed.difficulty ?? "beginner",
     primaryMuscles: seed.muscles,
     secondaryMuscles: seed.secondary ?? [],
@@ -51,10 +53,10 @@ export const EXERCISES: Exercise[] = [
   defineExercise({ id: "hip-thrust", name: "臀推", category: "glutes", pattern: "hip-extension", equipment: ["machine", "barbell"], muscles: ["臀大肌"], secondary: ["腘绳肌"], contraindications: ["腰部"], substitutions: ["glute-bridge"], cues: ["下巴微收", "顶端收紧臀部而不是腰部"], weight: 25 }),
   defineExercise({ id: "glute-bridge", name: "臀桥", category: "glutes", pattern: "hip-extension", equipment: ["bodyweight"], muscles: ["臀大肌"], contraindications: ["腰部"], substitutions: ["hip-thrust"], cues: ["肋骨向下", "脚跟发力推地"], weight: 0 }),
   defineExercise({ id: "standing-calf-raise", name: "站姿提踵", category: "legs", pattern: "calf-raise", equipment: ["bodyweight", "dumbbell"], muscles: ["小腿三头肌"], contraindications: ["脚踝"], cues: ["顶端停顿一秒", "缓慢落下脚跟"], weight: 0 }),
-  defineExercise({ id: "dumbbell-bench-press", name: "哑铃卧推", category: "push", pattern: "horizontal-push", equipment: ["dumbbell"], muscles: ["胸大肌"], secondary: ["肱三头肌", "三角肌前束"], contraindications: ["肩膀", "手腕"], substitutions: ["machine-chest-press", "incline-push-up"], cues: ["肩胛骨稳定贴住长凳", "前臂保持接近垂直"], weight: 6 }),
+  defineExercise({ id: "dumbbell-bench-press", name: "哑铃卧推", category: "push", pattern: "horizontal-push", equipment: ["dumbbell"], requiredEquipment: ["bench"], muscles: ["胸大肌"], secondary: ["肱三头肌", "三角肌前束"], contraindications: ["肩膀", "手腕"], substitutions: ["machine-chest-press", "incline-push-up"], cues: ["肩胛骨稳定贴住长凳", "前臂保持接近垂直"], weight: 6 }),
   defineExercise({ id: "machine-chest-press", name: "器械推胸", category: "push", pattern: "horizontal-push", equipment: ["machine"], muscles: ["胸大肌"], contraindications: ["肩膀"], substitutions: ["dumbbell-bench-press", "incline-push-up"], weight: 15 }),
-  defineExercise({ id: "incline-dumbbell-press", name: "上斜哑铃卧推", category: "push", pattern: "incline-push", equipment: ["dumbbell"], muscles: ["胸大肌上部"], secondary: ["三角肌前束"], contraindications: ["肩膀"], substitutions: ["dumbbell-bench-press"], weight: 5 }),
-  defineExercise({ id: "incline-push-up", name: "上斜俯卧撑", category: "push", pattern: "horizontal-push", equipment: ["bodyweight", "bench"], muscles: ["胸大肌"], contraindications: ["肩膀", "手腕"], substitutions: ["machine-chest-press"], cues: ["身体保持一条直线", "胸口靠近支撑面"], weight: 0 }),
+  defineExercise({ id: "incline-dumbbell-press", name: "上斜哑铃卧推", category: "push", pattern: "incline-push", equipment: ["dumbbell"], requiredEquipment: ["bench"], muscles: ["胸大肌上部"], secondary: ["三角肌前束"], contraindications: ["肩膀"], substitutions: ["dumbbell-bench-press"], weight: 5 }),
+  defineExercise({ id: "incline-push-up", name: "上斜俯卧撑", category: "push", pattern: "horizontal-push", equipment: ["bodyweight"], requiredEquipment: ["bench"], muscles: ["胸大肌"], contraindications: ["肩膀", "手腕"], substitutions: ["machine-chest-press"], cues: ["身体保持一条直线", "胸口靠近支撑面"], weight: 0 }),
   defineExercise({ id: "cable-chest-fly", name: "绳索夹胸", category: "push", pattern: "chest-fly", equipment: ["cable"], muscles: ["胸大肌"], contraindications: ["肩膀"], substitutions: ["machine-chest-press"], weight: 5 }),
   defineExercise({ id: "lat-pulldown", name: "高位下拉", category: "pull", pattern: "vertical-pull", equipment: ["cable", "machine"], muscles: ["背阔肌"], secondary: ["肱二头肌"], contraindications: ["肩膀"], substitutions: ["seated-cable-row"], cues: ["先下沉肩胛", "把手拉向锁骨附近"], weight: 20 }),
   defineExercise({ id: "seated-cable-row", name: "坐姿绳索划船", category: "pull", pattern: "horizontal-pull", equipment: ["cable"], muscles: ["背阔肌", "菱形肌"], contraindications: ["腰部"], substitutions: ["one-arm-dumbbell-row", "machine-row"], cues: ["胸口保持打开", "肘部向后而不是耸肩"], weight: 15 }),

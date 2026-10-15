@@ -3,7 +3,11 @@ import { createJSONStorage, persist, type StateStorage } from "zustand/middlewar
 
 import { getExercise } from "../domain/exercises";
 import { findSubstitute, generatePlan } from "../domain/plan-engine";
-import { trainingPlanSchema, userProfileSchema } from "../domain/schemas";
+import {
+  trainingPlanSchema,
+  userProfileSchema,
+  workoutSessionSchema,
+} from "../domain/schemas";
 import type {
   ExerciseFeedback,
   TrainingPlan,
@@ -72,12 +76,31 @@ export function parsePersistedFitnessState(input: unknown): PersistedFitnessStat
     if (!plan.success) return {};
     parsed.activePlan = plan.data;
   }
-  if (Array.isArray(value.workoutHistory)) parsed.workoutHistory = value.workoutHistory as WorkoutSession[];
-  if (value.activeWorkout === null || typeof value.activeWorkout === "object") {
-    parsed.activeWorkout = value.activeWorkout as WorkoutSession | null;
+  if (value.workoutHistory !== undefined) {
+    const history = workoutSessionSchema.array().safeParse(value.workoutHistory);
+    if (!history.success) return {};
+    parsed.workoutHistory = history.data;
+  }
+  if (value.activeWorkout === null) {
+    parsed.activeWorkout = null;
+  } else if (value.activeWorkout !== undefined) {
+    const workout = workoutSessionSchema.safeParse(value.activeWorkout);
+    if (!workout.success) return {};
+    parsed.activeWorkout = workout.data;
   }
   if (["onboarding", "dashboard", "plan", "workout", "summary", "coach"].includes(String(value.view))) {
     parsed.view = value.view as AppView;
+  }
+
+  if (!parsed.profile) {
+    if (parsed.activePlan || parsed.activeWorkout || (parsed.workoutHistory?.length ?? 0) > 0) return {};
+    parsed.view = "onboarding";
+  } else if (
+    (parsed.view === "workout" && !parsed.activeWorkout) ||
+    (parsed.view === "plan" && !parsed.activePlan) ||
+    (parsed.view === "summary" && (parsed.workoutHistory?.length ?? 0) === 0)
+  ) {
+    parsed.view = "dashboard";
   }
   return parsed;
 }

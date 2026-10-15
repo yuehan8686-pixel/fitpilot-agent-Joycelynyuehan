@@ -27,7 +27,7 @@ export const userProfileSchema = z.object({
   safetyAcknowledged: z.literal(true),
 });
 
-const plannedExerciseSchema = z.object({
+export const plannedExerciseSchema = z.object({
   exerciseId: z.string().min(1),
   sets: z.number().int().min(1).max(8),
   repMin: z.number().int().min(1).max(100),
@@ -55,6 +55,42 @@ export const trainingPlanSchema = z.object({
   sessions: z.array(planSessionSchema).min(1).max(5),
 });
 
+export const setLogSchema = z.object({
+  id: z.string().min(1),
+  setIndex: z.number().int().min(0).max(20),
+  weightKg: z.number().min(0).max(1000),
+  reps: z.number().int().min(1).max(1000),
+  completedAt: z.string().datetime(),
+});
+
+export const exerciseFeedbackSchema = z.object({
+  rpe: z.number().min(1).max(10),
+  targetFeeling: z.number().min(1).max(5),
+  painLevel: z.number().min(0).max(5),
+  painArea: z.string().max(200).optional(),
+  compensation: z.string().max(500).optional(),
+  note: z.string().max(1000).optional(),
+  emergencySymptoms: z.array(z.string().max(200)).max(20),
+});
+
+const workoutExerciseSchema = z.object({
+  planned: plannedExerciseSchema,
+  setLogs: z.array(setLogSchema).max(20),
+  feedback: exerciseFeedbackSchema.optional(),
+});
+
+export const workoutSessionSchema = z.object({
+  id: z.string().min(1),
+  planSessionId: z.string().min(1),
+  sessionName: z.string().min(1).max(200),
+  startedAt: z.string().datetime(),
+  finishedAt: z.string().datetime().optional(),
+  currentExerciseIndex: z.number().int().min(0).max(20),
+  exercises: z.array(workoutExerciseSchema).min(1).max(20),
+  restEndsAt: z.string().datetime().optional(),
+  summary: z.string().max(2000).optional(),
+});
+
 export const coachSuggestedActionSchema = z.object({
   type: z.enum(["replace_exercise", "reduce_load", "stop_workout", "none"]),
   reason: z.string(),
@@ -71,6 +107,6 @@ export const coachRequestSchema = z.object({
   message: z.string().trim().min(1).max(1000),
   profile: userProfileSchema.optional(),
   plan: trainingPlanSchema.optional(),
-  history: z.array(z.unknown()).max(20).optional(),
+  history: z.array(workoutSessionSchema).max(20).optional(),
   activeExerciseId: z.string().optional(),
 });

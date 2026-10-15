@@ -41,6 +41,36 @@ describe("fitness store", () => {
     expect(parsePersistedFitnessState({ profile: "broken", activePlan: 42 })).toEqual({});
   });
 
+  it("rejects a corrupt active workout even when the profile is valid", () => {
+    expect(
+      parsePersistedFitnessState({
+        profile,
+        activeWorkout: { id: "broken", exercises: null },
+        view: "workout",
+      }),
+    ).toEqual({});
+  });
+
+  it("rejects corrupt workout history instead of hydrating unsafe data", () => {
+    expect(
+      parsePersistedFitnessState({
+        profile,
+        workoutHistory: [{ sessionName: "missing required fields" }],
+      }),
+    ).toEqual({});
+  });
+
+  it("recovers to the dashboard when a persisted workout view has no active workout", () => {
+    const persisted = parsePersistedFitnessState({
+      profile,
+      activeWorkout: null,
+      workoutHistory: [],
+      view: "workout",
+    });
+
+    expect(persisted.view).toBe("dashboard");
+  });
+
   it("starts a planned workout and logs a completed set", () => {
     const plan = generatePlan(profile);
     useFitnessStore.getState().saveProfile(profile);

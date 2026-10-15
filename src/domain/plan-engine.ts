@@ -48,19 +48,22 @@ function isCompatible(exercise: Exercise, profile: UserProfile): boolean {
     exercise.category !== "warmup" &&
     difficultyRank[exercise.difficulty] <= difficultyRank[profile.experience] &&
     exercise.equipment.some((equipment) => profile.equipment.includes(equipment)) &&
+    (exercise.requiredEquipment ?? []).every((equipment) => profile.equipment.includes(equipment)) &&
     !matchesInjury(exercise, profile)
   );
 }
 
 function planned(exercise: Exercise, profile: UserProfile): PlannedExercise {
   const beginner = profile.experience === "beginner";
+  const fatLoss = profile.goal === "lose_fat";
+  const baseRest = ["legs", "glutes", "push", "pull"].includes(exercise.category) ? 90 : 60;
   return {
     exerciseId: exercise.id,
     sets: beginner ? 2 : 3,
-    repMin: exercise.category === "core" ? 8 : 8,
-    repMax: exercise.category === "core" ? 12 : 12,
+    repMin: fatLoss ? 10 : 8,
+    repMax: fatLoss ? 15 : 12,
     targetRpe: beginner ? 7 : 8,
-    restSeconds: ["legs", "glutes", "push", "pull"].includes(exercise.category) ? 90 : 60,
+    restSeconds: fatLoss ? Math.max(45, baseRest - 30) : baseRest,
     suggestedWeightKg: exercise.defaultWeightKg,
   };
 }
@@ -99,11 +102,16 @@ export function generatePlan(profile: UserProfile): TrainingPlan {
   const pool = EXERCISES.filter((exercise) => isCompatible(exercise, profile));
   const sessions = templates.map((template, index) => buildSession(index, template, pool, profile));
   const noExercises = sessions.every((session) => session.exercises.length === 0);
+  const goalLabel = {
+    build_muscle: "增肌塑形",
+    lose_fat: "减脂与体能",
+    general_fitness: "基础健康",
+  }[profile.goal];
 
   return {
     id: `plan-${profile.id}`,
     createdAt: new Date().toISOString(),
-    title: `${profile.trainingDays} 日训练计划`,
+    title: `${goalLabel} · ${profile.trainingDays} 日计划`,
     summary: noExercises
       ? "需要补充器械或调整限制后再生成力量训练。"
       : `按每周 ${profile.trainingDays} 次、每次约 ${profile.sessionMinutes} 分钟安排。`,

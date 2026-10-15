@@ -17,7 +17,7 @@ export function Dashboard() {
     <main className="dashboard-screen">
       <section className="dashboard-hero">
         <div><span className="system-line">训练档案已连接</span><h1>{profile.name}，今天<br />练得明白一点。</h1><p>{goal} · 每周 {profile.trainingDays} 次 · 每次 {profile.sessionMinutes} 分钟</p></div>
-        <div className="readiness-dial"><span>READY</span><strong>{history.length > 0 ? "82" : "76"}</strong><small>今日状态</small></div>
+        <div className="readiness-dial"><span>READY</span><strong>就绪</strong><small>今日状态</small></div>
       </section>
 
       <section className="dashboard-grid">

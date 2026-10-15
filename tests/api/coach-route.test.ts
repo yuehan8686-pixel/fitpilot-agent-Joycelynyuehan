@@ -85,6 +85,20 @@ describe("getCoachResponse", () => {
     expect(response.safetyLevel).toBe("normal");
   });
 
+  it("rejects model actions that reference an unknown exercise", async () => {
+    const complete = vi.fn().mockResolvedValue({
+      ...aiResponse,
+      suggestedActions: [
+        { type: "replace_exercise", reason: "换一个动作", exerciseId: "invented-exercise" },
+      ],
+    });
+
+    const response = await getCoachResponse(request, { apiKey: "test-key", complete });
+
+    expect(response.message).toContain("每周 3 次");
+    expect(response.suggestedActions).toEqual([]);
+  });
+
   it.each([
     ["我的膝盖刺痛，还能继续深蹲吗？", "caution"],
     ["我胸痛并且呼吸困难", "stop"],

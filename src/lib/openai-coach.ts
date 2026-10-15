@@ -3,6 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
 import { localCoachReply } from "../domain/coach";
+import { getExercise } from "../domain/exercises";
 import { coachResponseSchema } from "../domain/schemas";
 import type { CoachRequest, CoachResponse } from "../domain/types";
 
@@ -104,7 +105,11 @@ export async function getCoachResponse(
   try {
     const result = await (options.complete ?? completeWithOpenAI)(request, apiKey);
     const parsed = coachResponseSchema.safeParse(result);
-    return parsed.success ? parsed.data : fallback;
+    if (!parsed.success) return fallback;
+    const knownExercises = parsed.data.suggestedActions.every(
+      (action) => !action.exerciseId || Boolean(getExercise(action.exerciseId)),
+    );
+    return knownExercises ? parsed.data : fallback;
   } catch {
     return fallback;
   }

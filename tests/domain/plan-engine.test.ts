@@ -54,6 +54,30 @@ describe("generatePlan", () => {
     ).toBe(true);
   });
 
+  it("does not prescribe bench-dependent exercises when no bench is available", () => {
+    const plan = generatePlan({
+      ...profile,
+      equipment: ["bodyweight", "dumbbell"],
+    });
+    const selectedIds = plan.sessions.flatMap((session) =>
+      session.exercises.map((exercise) => exercise.exerciseId),
+    );
+
+    expect(selectedIds).not.toContain("dumbbell-bench-press");
+    expect(selectedIds).not.toContain("incline-dumbbell-press");
+    expect(selectedIds).not.toContain("incline-push-up");
+  });
+
+  it("changes repetition and rest targets for a fat-loss goal", () => {
+    const musclePlan = generatePlan({ ...profile, goal: "build_muscle" });
+    const fatLossPlan = generatePlan({ ...profile, goal: "lose_fat" });
+    const muscleExercise = musclePlan.sessions[0].exercises[0];
+    const fatLossExercise = fatLossPlan.sessions[0].exercises[0];
+
+    expect(fatLossExercise.repMin).toBeGreaterThan(muscleExercise.repMin);
+    expect(fatLossExercise.restSeconds).toBeLessThan(muscleExercise.restSeconds);
+  });
+
   it("returns a recoverable warning when no strength exercise is compatible", () => {
     const plan = generatePlan({
       ...profile,
