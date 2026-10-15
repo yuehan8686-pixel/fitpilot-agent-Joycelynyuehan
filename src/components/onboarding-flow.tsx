@@ -92,7 +92,7 @@ export function OnboardingFlow({ onComplete }: Props) {
           </div>
           <label className="field field-wide">
             <span>你的称呼</span>
-            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="例如：小驼" />
+            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="例如：小高" />
           </label>
           <label className="field">
             <span>年龄</span>

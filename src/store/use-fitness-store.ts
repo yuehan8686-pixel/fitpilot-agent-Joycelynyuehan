@@ -31,7 +31,10 @@ type FitnessState = {
   activeWorkout: WorkoutSession | null;
   workoutHistory: WorkoutSession[];
   view: AppView;
+  previousView: AppView | null;
   setView: (view: AppView) => void;
+  goBack: () => void;
+  goHome: () => void;
   saveProfile: (profile: UserProfile) => void;
   createPlan: () => void;
   startWorkout: (planSessionId: string, startedAt?: string) => void;
@@ -48,6 +51,7 @@ const emptyState = {
   activeWorkout: null,
   workoutHistory: [],
   view: "onboarding" as AppView,
+  previousView: null as AppView | null,
 };
 
 const memoryStorage: StateStorage = {
@@ -59,6 +63,19 @@ const memoryStorage: StateStorage = {
 function id(prefix: string): string {
   const random = globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
   return `${prefix}-${random}`;
+}
+
+function canOpenView(view: AppView, state: FitnessState): boolean {
+  if (view === "onboarding") return !state.profile;
+  if (view === "plan") return Boolean(state.activePlan);
+  if (view === "workout") return Boolean(state.activeWorkout);
+  if (view === "summary") return state.workoutHistory.length > 0;
+  return Boolean(state.profile);
+}
+
+function fallbackBackView(state: FitnessState): AppView {
+  if ((state.view === "workout" || state.view === "summary") && state.activePlan) return "plan";
+  return "dashboard";
 }
 
 export function parsePersistedFitnessState(input: unknown): PersistedFitnessState {
@@ -114,18 +131,25 @@ export const useFitnessStore = create<FitnessState>()(
   persist(
     (set, get) => ({
       ...emptyState,
-      setView: (view) => set({ view }),
-      saveProfile: (profile) => set({ profile, view: "dashboard" }),
+      setView: (view) => set((state) => view === state.view ? state : { view, previousView: state.view }),
+      goBack: () => set((state) => ({
+        view: state.previousView && canOpenView(state.previousView, state)
+          ? state.previousView
+          : fallbackBackView(state),
+        previousView: null,
+      })),
+      goHome: () => set((state) => ({ view: "dashboard", previousView: state.view })),
+      saveProfile: (profile) => set((state) => ({ profile, view: "dashboard", previousView: state.view })),
       createPlan: () => {
         const profile = get().profile;
         if (!profile) return;
-        set({ activePlan: generatePlan(profile), view: "plan" });
+        set((state) => ({ activePlan: generatePlan(profile), view: "plan", previousView: state.view }));
       },
       startWorkout: (planSessionId, startedAt = new Date().toISOString()) => {
         const plan = get().activePlan;
         const session = plan?.sessions.find((item) => item.id === planSessionId);
         if (!session) return;
-        set({
+        set((state) => ({
           activeWorkout: {
             id: id("workout"),
             planSessionId,
@@ -135,7 +159,8 @@ export const useFitnessStore = create<FitnessState>()(
             exercises: session.exercises.map((planned) => ({ planned, setLogs: [] })),
           },
           view: "workout",
-        });
+          previousView: state.view,
+        }));
       },
       completeSet: (weightKg, reps, completedAt = new Date().toISOString()) => {
         const workout = get().activeWorkout;
@@ -209,6 +234,7 @@ export const useFitnessStore = create<FitnessState>()(
           activeWorkout: null,
           workoutHistory: [completed, ...state.workoutHistory],
           view: "summary",
+          previousView: state.view,
         }));
       },
       resetAll: () => set({ ...emptyState }),

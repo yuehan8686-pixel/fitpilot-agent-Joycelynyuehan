@@ -3,16 +3,16 @@
 import { getExercise } from "../domain/exercises";
 import { useFitnessStore } from "../store/use-fitness-store";
 import { ExerciseVisual } from "./exercise-visual";
+import { ScreenActions } from "./screen-actions";
 
 export function PlanView() {
   const plan = useFitnessStore((state) => state.activePlan);
   const startWorkout = useFitnessStore((state) => state.startWorkout);
-  const setView = useFitnessStore((state) => state.setView);
   if (!plan) return <div className="empty-state"><h2>计划尚未生成</h2></div>;
 
   return (
     <main className="plan-screen">
-      <header className="page-heading"><button type="button" onClick={() => setView("dashboard")}>返回</button><span className="system-line">本周程序</span><h1>{plan.title}</h1><p>{plan.summary}</p></header>
+      <header className="page-heading"><ScreenActions /><span className="system-line">本周程序</span><h1>{plan.title}</h1><p>{plan.summary}</p></header>
       {plan.warning && <p className="pain-alert" role="alert">{plan.warning}</p>}
       <div className="plan-sessions">
         {plan.sessions.map((session, sessionIndex) => (

@@ -5,12 +5,12 @@ import { useState, type FormEvent } from "react";
 import { localCoachReply } from "../domain/coach";
 import type { CoachResponse } from "../domain/types";
 import { useFitnessStore } from "../store/use-fitness-store";
+import { ScreenActions } from "./screen-actions";
 
 export function CoachPanel() {
   const profile = useFitnessStore((state) => state.profile);
   const plan = useFitnessStore((state) => state.activePlan);
   const history = useFitnessStore((state) => state.workoutHistory);
-  const setView = useFitnessStore((state) => state.setView);
   const [message, setMessage] = useState("");
   const [responses, setResponses] = useState<CoachResponse[]>([]);
   const [pending, setPending] = useState(false);
@@ -56,5 +56,5 @@ export function CoachPanel() {
     setMessage("");
   }
 
-  return <main className="coach-screen"><header className="page-heading"><button type="button" onClick={() => setView("dashboard")}>返回</button><span className="system-line">AI 训练 Agent · 本地安全兜底</span><h1>问具体一点，<br />答案才有用。</h1><p>它能读取你的档案和训练记录；未配置 API 时自动使用本地规则。</p></header><div className="coach-prompts">{["今天应该练什么？", "这个动作哪里要注意？", "我觉得膝盖疼怎么办？"].map((prompt) => <button key={prompt} type="button" onClick={() => setMessage(prompt)}>{prompt}</button>)}</div><div className="coach-log" aria-live="polite">{responses.length === 0 ? <div className="coach-empty"><span>{pending ? "AGENT THINKING" : "AGENT READY"}</span><p>{pending ? "正在结合你的档案生成建议…" : "可以询问计划、动作提示、换动作或本次负荷。"}</p></div> : responses.map((response, index) => <article className={`coach-response ${response.safetyLevel}`} key={index}><span>{response.safetyLevel === "normal" ? "训练建议" : response.safetyLevel === "caution" ? "注意" : "停止训练"}</span><p>{response.message}</p></article>)}</div>{error ? <div className="coach-network-note" role="status"><span>{error}</span><button type="button" disabled={pending} onClick={() => void askCoach(lastQuestion)}>重试 AI</button></div> : null}<form className="coach-input" onSubmit={submit}><input aria-label="向训练 Agent 提问" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="输入你的问题…" disabled={pending} /><button type="submit" disabled={pending}>{pending ? "思考中" : "发送"}</button></form></main>;
+  return <main className="coach-screen"><header className="page-heading coach-heading"><ScreenActions /><span className="system-line">AI 训练 Agent · 本地安全兜底</span><h1>问具体一点，答案才有用。</h1><p>它能读取你的档案和训练记录；未配置 API 时自动使用本地规则。</p></header><div className="coach-prompts">{["今天应该练什么？", "这个动作哪里要注意？", "我觉得膝盖疼怎么办？"].map((prompt) => <button key={prompt} type="button" onClick={() => setMessage(prompt)}>{prompt}</button>)}</div><div className="coach-log" aria-live="polite">{responses.length === 0 ? <div className="coach-empty"><span>{pending ? "AGENT THINKING" : "AGENT READY"}</span><p>{pending ? "正在结合你的档案生成建议…" : "可以询问计划、动作提示、换动作或本次负荷。"}</p></div> : responses.map((response, index) => <article className={`coach-response ${response.safetyLevel}`} key={index}><span>{response.safetyLevel === "normal" ? "训练建议" : response.safetyLevel === "caution" ? "注意" : "停止训练"}</span><p>{response.message}</p></article>)}</div>{error ? <div className="coach-network-note" role="status"><span>{error}</span><button type="button" disabled={pending} onClick={() => void askCoach(lastQuestion)}>重试 AI</button></div> : null}<form className="coach-input" onSubmit={submit}><input aria-label="向训练 Agent 提问" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="输入你的问题…" disabled={pending} /><button type="submit" disabled={pending}>{pending ? "思考中" : "发送"}</button></form></main>;
 }

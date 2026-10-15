@@ -86,6 +86,58 @@ describe("fitness store", () => {
     expect(updated?.exercises[0].setLogs[0].weightKg).toBe(10);
   });
 
+  it("returns to the previous surface without discarding an active workout", () => {
+    useFitnessStore.getState().saveProfile(profile);
+    useFitnessStore.getState().createPlan();
+    const plan = useFitnessStore.getState().activePlan!;
+    useFitnessStore.getState().startWorkout(plan.sessions[0].id, "2026-10-15T10:00:00.000Z");
+    useFitnessStore.getState().completeSet(10, 12, "2026-10-15T10:01:00.000Z");
+
+    const activeWorkoutId = useFitnessStore.getState().activeWorkout!.id;
+    useFitnessStore.getState().goBack();
+
+    expect(useFitnessStore.getState().view).toBe("plan");
+    expect(useFitnessStore.getState().activeWorkout?.id).toBe(activeWorkoutId);
+    expect(useFitnessStore.getState().activeWorkout?.exercises[0].setLogs).toHaveLength(1);
+  });
+
+  it("opens the main menu while keeping an active workout available to resume", () => {
+    useFitnessStore.getState().saveProfile(profile);
+    useFitnessStore.getState().createPlan();
+    const plan = useFitnessStore.getState().activePlan!;
+    useFitnessStore.getState().startWorkout(plan.sessions[0].id, "2026-10-15T10:00:00.000Z");
+
+    useFitnessStore.getState().goHome();
+
+    expect(useFitnessStore.getState().view).toBe("dashboard");
+    expect(useFitnessStore.getState().activeWorkout?.sessionName).toBe(plan.sessions[0].name);
+  });
+
+  it("returns from a completed summary to the plan instead of an empty workout", () => {
+    useFitnessStore.getState().saveProfile(profile);
+    useFitnessStore.getState().createPlan();
+    const plan = useFitnessStore.getState().activePlan!;
+    useFitnessStore.getState().startWorkout(plan.sessions[0].id, "2026-10-15T10:00:00.000Z");
+    useFitnessStore.getState().finishWorkout("2026-10-15T10:30:00.000Z");
+
+    useFitnessStore.getState().goBack();
+
+    expect(useFitnessStore.getState().view).toBe("plan");
+    expect(useFitnessStore.getState().activeWorkout).toBeNull();
+  });
+
+  it("uses a safe contextual fallback when navigation history is unavailable", () => {
+    useFitnessStore.getState().saveProfile(profile);
+    useFitnessStore.getState().createPlan();
+    const plan = useFitnessStore.getState().activePlan!;
+    useFitnessStore.getState().startWorkout(plan.sessions[0].id, "2026-10-15T10:00:00.000Z");
+    useFitnessStore.setState({ previousView: null });
+
+    useFitnessStore.getState().goBack();
+
+    expect(useFitnessStore.getState().view).toBe("plan");
+  });
+
   it("restores remaining rest from an absolute end timestamp", () => {
     expect(
       getRemainingRestSeconds("2026-10-15T10:02:30.000Z", new Date("2026-10-15T10:01:00.000Z").getTime()),

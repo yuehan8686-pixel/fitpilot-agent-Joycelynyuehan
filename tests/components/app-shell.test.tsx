@@ -42,4 +42,32 @@ describe("AppShell", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "instant" });
   });
+
+  it("uses the refined one-line dashboard greeting and migrates the demo name", async () => {
+    render(<AppShell />);
+
+    const heading = await screen.findByRole("heading", { name: "小高，今天练得明白一点。" });
+    expect(heading.querySelector("br")).toBeNull();
+  });
+
+  it("shows back and main-menu actions on every deep surface", async () => {
+    render(<AppShell />);
+
+    await userEvent.click(await screen.findByRole("button", { name: "计划" }));
+    expect(screen.getByRole("button", { name: "返回" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "返回主菜单" })).toBeVisible();
+
+    await userEvent.click(screen.getAllByRole("button", { name: /^开始/ })[0]);
+    expect(screen.getByRole("button", { name: "返回" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "返回主菜单" })).toBeVisible();
+
+    await userEvent.click(screen.getByRole("button", { name: "返回主菜单" }));
+    expect(await screen.findByRole("button", { name: /^继续训练/ })).toBeVisible();
+
+    await userEvent.click(screen.getByRole("button", { name: "Agent" }));
+    expect(screen.getByRole("button", { name: "返回" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "返回主菜单" })).toBeVisible();
+    const coachHeading = screen.getByRole("heading", { name: "问具体一点，答案才有用。" });
+    expect(coachHeading.querySelector("br")).toBeNull();
+  });
 });

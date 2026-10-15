@@ -7,6 +7,7 @@ import { useFitnessStore } from "../store/use-fitness-store";
 import { ExerciseVisual } from "./exercise-visual";
 import { FeedbackSheet } from "./feedback-sheet";
 import { RestTimer } from "./rest-timer";
+import { ScreenActions } from "./screen-actions";
 
 export function WorkoutRunner() {
   const workout = useFitnessStore((state) => state.activeWorkout);
@@ -35,6 +36,7 @@ export function WorkoutRunner() {
 
   return (
     <main className="workout-console">
+      <ScreenActions />
       <header className="session-header">
         <div><span className="system-line">训练进行中</span><h1>{workout.sessionName}</h1></div>
         <div className="session-count">{String(workout.currentExerciseIndex + 1).padStart(2, "0")}<small>/{String(workout.exercises.length).padStart(2, "0")}</small></div>

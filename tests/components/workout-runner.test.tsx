@@ -70,4 +70,14 @@ describe("WorkoutRunner", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("停止当前动作");
   });
+
+  it("returns to the plan without ending or resetting the workout", async () => {
+    render(<WorkoutRunner />);
+    await userEvent.click(screen.getByRole("button", { name: "完成第 1 组" }));
+
+    await userEvent.click(screen.getByRole("button", { name: "返回" }));
+
+    expect(useFitnessStore.getState().view).toBe("plan");
+    expect(useFitnessStore.getState().activeWorkout?.exercises[0].setLogs).toHaveLength(1);
+  });
 });
