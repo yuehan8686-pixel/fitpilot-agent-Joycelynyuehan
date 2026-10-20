@@ -61,6 +61,16 @@ describe("WorkoutRunner", () => {
     expect(screen.getByTestId("current-exercise-name").textContent).not.toBe(original);
   });
 
+  it("ends the rest timer when the final set opens feedback", async () => {
+    render(<WorkoutRunner />);
+
+    await userEvent.click(screen.getByRole("button", { name: "完成第 1 组" }));
+    await userEvent.click(screen.getByRole("button", { name: "完成第 2 组" }));
+
+    expect(screen.getByText("这一组感觉怎么样？")).toBeVisible();
+    expect(screen.queryByText(/休息 \d/)).not.toBeInTheDocument();
+  });
+
   it("shows stop guidance when pain is reported", async () => {
     render(<WorkoutRunner />);
 

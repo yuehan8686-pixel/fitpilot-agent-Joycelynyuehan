@@ -162,6 +162,17 @@ describe("fitness store", () => {
     expect(useFitnessStore.getState().workoutHistory[0].finishedAt).toBe("2026-10-15T10:45:00.000Z");
   });
 
+  it("applies an agent load suggestion to the matching planned exercise", () => {
+    useFitnessStore.getState().saveProfile(profile);
+    useFitnessStore.getState().createPlan();
+    const exercise = useFitnessStore.getState().activePlan!.sessions[0].exercises[0];
+
+    useFitnessStore.getState().applyLoadSuggestion(exercise.exerciseId, 9);
+
+    const updated = useFitnessStore.getState().activePlan!.sessions[0].exercises[0];
+    expect(updated.suggestedWeightKg).toBe(9);
+  });
+
   it("clears profile, plan, active workout, and history", () => {
     useFitnessStore.getState().saveProfile(profile);
     useFitnessStore.getState().createPlan();

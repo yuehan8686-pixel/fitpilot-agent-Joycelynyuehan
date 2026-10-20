@@ -26,6 +26,21 @@ export function AppShell() {
   if (!profile) return <OnboardingFlow onComplete={(next) => { saveProfile(next); createPlan(); }} />;
 
   const content = view === "plan" ? <PlanView /> : view === "workout" ? <WorkoutRunner /> : view === "summary" ? <WorkoutSummary /> : view === "coach" ? <CoachPanel /> : <Dashboard />;
-  const hideNav = view === "workout" || view === "summary";
-  return <div className="app-frame"><header className="top-bar"><button className="brand-lockup" type="button" onClick={() => setView("dashboard")}><span className="brand-mark">FP</span><span>FITPILOT</span></button><span className="mode-badge">LOCAL FIRST</span></header>{content}{!hideNav && <nav className="bottom-nav" aria-label="主导航"><button className={view === "dashboard" ? "active" : ""} onClick={() => setView("dashboard")}>训练台</button><button className={view === "plan" ? "active" : ""} onClick={() => setView("plan")}>计划</button><button className={view === "coach" ? "active" : ""} onClick={() => setView("coach")}>Agent</button></nav>}</div>;
+  return (
+    <div className="app-frame">
+      <header className="top-bar">
+        <button className="brand-lockup" type="button" onClick={() => setView("dashboard")}><span className="brand-mark">FP</span><span>FITPILOT</span></button>
+        <div className="top-modes"><span className="mode-chip ai">AI MODE</span><span className="mode-chip local">LOCAL FIRST</span></div>
+      </header>
+      <div className="product-shell">
+        <nav className="product-nav" aria-label="产品导航">
+          <button aria-current={view === "dashboard" ? "page" : undefined} className={view === "dashboard" ? "active" : ""} onClick={() => setView("dashboard")}><span />训练台</button>
+          <button aria-current={view === "plan" ? "page" : undefined} className={view === "plan" ? "active" : ""} onClick={() => setView("plan")}><span />计划</button>
+          <button aria-current={view === "coach" ? "page" : undefined} className={view === "coach" ? "active" : ""} onClick={() => setView("coach")}><span />Agent</button>
+          <small>LOCAL DATA<br />安全规则始终启用</small>
+        </nav>
+        <div className="product-content">{content}</div>
+      </div>
+    </div>
+  );
 }

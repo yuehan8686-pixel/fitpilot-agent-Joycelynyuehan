@@ -51,7 +51,7 @@ export function WorkoutRunner() {
           <div className="exercise-kicker"><span>{exercise.primaryMuscles.join(" / ")}</span><span>目标 RPE {planned.targetRpe}</span></div>
           <h2 data-testid="current-exercise-name">{exercise.name}</h2>
           <p className="main-cue">{exercise.cues[0]}</p>
-          <div className="cue-list">{exercise.cues.slice(1).map((cue) => <span key={cue}>{cue}</span>)}</div>
+          <section className="safe-cue"><strong>动作安全提示</strong><p>{exercise.cues.slice(1).join("，") || "保持稳定节奏；出现疼痛立即停止。"}</p></section>
           <button className="text-action" type="button" onClick={() => replaceExercise(exercise.id)}>换个动作</button>
         </div>
       </section>

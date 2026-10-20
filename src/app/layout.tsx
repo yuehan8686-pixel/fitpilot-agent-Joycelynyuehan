@@ -4,21 +4,21 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FitPilot | 电子健身私教",
-  description: "从训练计划到每一组记录的本地优先健身私教。",
+  title: "FitPilot | 运动表现智能终端",
+  description: "本地优先、规则守护的 AI 训练闭环：从计划、执行到反馈调整。",
   applicationName: "FitPilot",
   manifest: "/manifest.webmanifest",
   icons: [{ rel: "icon", url: "/icon.svg", type: "image/svg+xml" }],
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "FitPilot",
   },
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0d0c",
+  themeColor: "#f3f6ef",
   width: "device-width",
   initialScale: 1,
 };

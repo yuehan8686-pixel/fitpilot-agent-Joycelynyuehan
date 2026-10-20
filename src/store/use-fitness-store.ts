@@ -40,6 +40,7 @@ type FitnessState = {
   startWorkout: (planSessionId: string, startedAt?: string) => void;
   completeSet: (weightKg: number, reps: number, completedAt?: string) => void;
   submitFeedback: (feedback: ExerciseFeedback) => void;
+  applyLoadSuggestion: (exerciseId: string, nextWeightKg: number) => void;
   replaceExercise: (exerciseId: string) => void;
   finishWorkout: (finishedAt?: string) => void;
   resetAll: () => void;
@@ -181,8 +182,11 @@ export const useFitnessStore = create<FitnessState>()(
             ],
           };
         });
-        const restSeconds = exercises[workout.currentExerciseIndex].planned.restSeconds;
-        const restEndsAt = new Date(new Date(completedAt).getTime() + restSeconds * 1000).toISOString();
+        const currentExercise = exercises[workout.currentExerciseIndex];
+        const restSeconds = currentExercise.planned.restSeconds;
+        const restEndsAt = currentExercise.setLogs.length < currentExercise.planned.sets
+          ? new Date(new Date(completedAt).getTime() + restSeconds * 1000).toISOString()
+          : undefined;
         set({ activeWorkout: { ...workout, exercises, restEndsAt } });
       },
       submitFeedback: (feedback) => {
@@ -200,6 +204,25 @@ export const useFitnessStore = create<FitnessState>()(
           },
         });
       },
+      applyLoadSuggestion: (exerciseId, nextWeightKg) => set((state) => ({
+        activePlan: state.activePlan ? {
+          ...state.activePlan,
+          sessions: state.activePlan.sessions.map((session) => ({
+            ...session,
+            exercises: session.exercises.map((exercise) => exercise.exerciseId === exerciseId
+              ? { ...exercise, suggestedWeightKg: nextWeightKg }
+              : exercise),
+          })),
+        } : null,
+        activeWorkout: state.activeWorkout ? {
+          ...state.activeWorkout,
+          exercises: state.activeWorkout.exercises.map((exercise) =>
+            exercise.planned.exerciseId === exerciseId && exercise.setLogs.length === 0
+              ? { ...exercise, planned: { ...exercise.planned, suggestedWeightKg: nextWeightKg } }
+              : exercise,
+          ),
+        } : null,
+      })),
       replaceExercise: (exerciseId) => {
         const { profile, activeWorkout } = get();
         if (!profile || !activeWorkout) return;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { ExerciseFeedback } from "../domain/types";
+import { DecisionPanel } from "./decision-panel";
 
 export function FeedbackSheet({ onSubmit }: { onSubmit: (feedback: ExerciseFeedback) => void }) {
   const [rpe, setRpe] = useState(7);
@@ -12,6 +13,7 @@ export function FeedbackSheet({ onSubmit }: { onSubmit: (feedback: ExerciseFeedb
   const [compensation, setCompensation] = useState("");
 
   return (
+    <div className="feedback-workspace">
     <section className="feedback-sheet">
       <div className="feedback-title"><span>组后校准</span><strong>这一组感觉怎么样？</strong></div>
       <label>
@@ -30,5 +32,7 @@ export function FeedbackSheet({ onSubmit }: { onSubmit: (feedback: ExerciseFeedb
       {painLevel > 0 && <p className="pain-alert" role="alert"><strong>停止当前动作</strong>。疼痛不是正常训练强度，不要继续加重。</p>}
       <button className="primary-action" type="button" onClick={() => onSubmit({ rpe, targetFeeling, painLevel, painArea: painArea || undefined, compensation: compensation || undefined, emergencySymptoms: [] })}>保存反馈，下一动作</button>
     </section>
+    <DecisionPanel compact title="下一次训练建议" context="本次完成组数 · 目标次数 · 主观反馈" evidence={`RPE ${rpe} · 目标肌群感受 ${targetFeeling}/5 · ${painLevel ? `疼痛 ${painLevel}/5` : "无疼痛"}`} recommendation={painLevel ? "取消加重，优先替换动作并降低训练量。" : "保持 2 组，下一次小幅增加负荷。"} fallback="若出现疼痛或异常症状，建议立即停止并寻求专业意见。" />
+    </div>
   );
 }
